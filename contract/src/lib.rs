@@ -5,8 +5,8 @@ use near_sdk::{log, near_bindgen};
 
 const BTC_BYTES_32_HEX_STR: &str =
     "4254430000000000000000000000000000000000000000000000000000000000";
-const SIGNER_1_PUB_KEY: &str = "034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa";
-const SIGNER_2_PUB_KEY: &str = "02466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f27";
+const SIGNER_1_PUB_KEY: &str = "466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f276728176c3c6431f8eeda4538dc37c865e2784f3a9e77d044f33e407797e1278a";
+const SIGNER_2_PUB_KEY: &str = "4f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa385b6b1b8ead809ca67454d9683fcf2ba03456d6fe2c4abe2b07f0fbdbb2f1c1";
 
 #[near_bindgen]
 #[derive(Default, BorshDeserialize, BorshSerialize)]
@@ -14,7 +14,7 @@ pub struct Counter {
     val: i8,
 }
 
-fn get_pub_key(hex_pub_key: &str) -> [u8; 33] {
+fn get_pub_key(hex_pub_key: &str) -> [u8; 64] {
     let pub_key_vec = redstone::decode_hex(hex_pub_key).unwrap();
     pub_key_vec.try_into().unwrap()
 }
@@ -50,7 +50,7 @@ impl Counter {
 
         let data_feed_id_vec = redstone::decode_hex(BTC_BYTES_32_HEX_STR).unwrap();
         let data_feed_id: [u8; 32] = data_feed_id_vec.try_into().unwrap();
-        let authorised_signers: Vec<[u8; 33]> =
+        let authorised_signers: Vec<[u8; 64]> =
             vec![get_pub_key(SIGNER_1_PUB_KEY), get_pub_key(SIGNER_2_PUB_KEY)];
         let unique_signers_threshold = 1;
         let current_timestamp_milliseconds = 1654353400000;

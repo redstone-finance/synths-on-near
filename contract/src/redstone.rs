@@ -1,7 +1,7 @@
 use bitmaps::Bitmap;
 // use ink_env::hash::{HashOutput, Keccak256};
 use near_sdk::log;
-use std::convert::TryInto;
+// use std::convert::TryInto;
 use std::{fmt::Write, num::ParseIntError};
 // use k256::Secp256k
 
@@ -27,7 +27,7 @@ struct DataPackageExtractionResult {
 pub fn get_oracle_value(
     data_feed_id: &[u8; 32],
     unique_signers_threshold: u8,
-    authorised_signers: &[[u8; 33]],
+    authorised_signers: &[[u8; 64]],
     current_timestamp_milliseconds: u128,
     redstone_payload: &[u8],
 ) -> u128 {
@@ -100,7 +100,7 @@ fn extract_data_package(
     requested_data_feed_id: &[u8; 32],
     redstone_payload: &[u8],
     negative_offset_to_package: usize,
-    authorised_signers: &[[u8; 33]],
+    authorised_signers: &[[u8; 64]],
     current_timestamp_milliseconds: u128,
 ) -> DataPackageExtractionResult {
     let mut value_for_requested_data_feed: u128 = 0;
@@ -176,10 +176,11 @@ fn extract_data_package(
     // )
     // .unwrap();
 
-    let mut recovered_signer = [0; 33];
+    // let mut recovered_signer = [0; 33];
     let signature_v_byte = if signature[64] == 0x1c { 1 } else { 0 };
-    let pub_key = near_sdk::env::ecrecover(&message_hash, &signature[..64], signature_v_byte, true);
-    log!("pub_key: {}", encode_hex(&pub_key.unwrap()));
+    let recovered_signer =
+        near_sdk::env::ecrecover(&message_hash, &signature[..64], signature_v_byte, true).unwrap();
+    log!("recovered_signer: {}", encode_hex(&recovered_signer));
     // k256::ecdsa::recoverable::Signature::new()
     // // let rec_signer_pub_key = near_sdk::env::ecrecover(message_hash, signature, 0, false).unwrap();
     // let sig = ecdsa::Signature::from_str()
@@ -190,16 +191,16 @@ fn extract_data_package(
     //     ecdsa::signature::Signature::from_bytes(&signature).unwrap();
 
     // Signer verification
-    // let mut signer_is_authorised = false;
-    // for (authorised_signer_index, authorised_signer) in authorised_signers.iter().enumerate() {
-    //     if authorised_signer == &recovered_signer {
-    //         signer_index = authorised_signer_index;
-    //         signer_is_authorised = true;
-    //     }
-    // }
-    // if !signer_is_authorised {
-    //     panic!("Signer is not authorised");
-    // }
+    let mut signer_is_authorised = false;
+    for (authorised_signer_index, authorised_signer) in authorised_signers.iter().enumerate() {
+        if authorised_signer == &recovered_signer {
+            signer_index = authorised_signer_index;
+            signer_is_authorised = true;
+        }
+    }
+    if !signer_is_authorised {
+        panic!("Signer is not authorised");
+    }
 
     // Prepare result
     DataPackageExtractionResult {
