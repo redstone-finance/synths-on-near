@@ -1,0 +1,29 @@
+[package]
+name = "contract"
+version = "1.0.0"
+authors = ["Near Inc <hello@near.org>"]
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+near-sdk = {version = "4.1.0-pre.0", features=["unstable"] }
+uint = { version = "0.9.3", default-features = false }
+bitmaps = "3.2.0"
+k256 = "0.5.10"
+# ecdsa = "0.14.8"
+
+[features]
+unstable = []
+
+[profile.release]
+codegen-units = 1
+opt-level = "z"
+lto = true
+debug = false
+panic = "abort"
+overflow-checks = true
+
+[workspace]
+members = []
