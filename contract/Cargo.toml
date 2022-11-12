@@ -11,8 +11,7 @@ crate-type = ["cdylib"]
 near-sdk = {version = "4.1.0-pre.0", features=["unstable"] }
 uint = { version = "0.9.3", default-features = false }
 bitmaps = "3.2.0"
-k256 = "0.5.10"
-# ecdsa = "0.14.8"
+redstone-near-connector-rs = "0.0.1"
 
 [features]
 unstable = []
